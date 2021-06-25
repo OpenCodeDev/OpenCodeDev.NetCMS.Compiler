@@ -58,6 +58,14 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
             }
         }
 
+        public void Using(params string[] usings)
+        {
+            foreach (var item in usings)
+            {
+                Using(new UsingBuilder(item));
+            }
+        }
+
         public void Method(MethodBuilder item)
         {
             if (_Methods.Count(p => p._Name == item._Name) <= 0)

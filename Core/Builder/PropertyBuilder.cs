@@ -16,7 +16,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public string _Accessor { get; set; }
         public bool _IsStatic { get; set; }
-
+        public bool _IsNullable { get; set; }
         public string _Type { get; private set; }
         public string _Value { get; private set; }
 
@@ -72,25 +72,34 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
             }
         }
 
+        public void Attribute(string name, string parameters)
+        {
+            Attribute(new AttributeBuilder(name, parameters));
+        }
+
         public virtual void SetStatic(){
             _IsStatic = true;
         }
 
         public virtual void Value(string val){
+            if (val == null || val == String.Empty)
+            {
+                return;
+            }
             _Value = $" = {val};";
         }
 
 
         public virtual string ToAbstact()
         {
-            return $@"{String.Join(" ", _Attributes.Where(p => p._AbstractAllowed).Select(p => p.ToString()))} {_Type} {_Name} {{ get; set;}}";
+            return $@"{String.Join(" ", _Attributes.Where(p => p._AbstractAllowed).Select(p => p.ToString()))} {_Type}{(_IsNullable?"?":"")} {_Name} {{ get; set;}}";
         }
 
         /// <summary>
         /// Compile the Object to String
         /// </summary>
         public virtual string SquashToString(){
-            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_Type} {_Name} {{ {(_HasPrivateGet ? "private" : "")} get; {(_HasPrivateSet ? "private" : "")} set;}} {_Value}";
+            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_Type}{(_IsNullable ? "?" : "")} {_Name} {{ {(_HasPrivateGet ? "private" : "")} get; {(_HasPrivateSet ? "private" : "")} set;}} {_Value}";
         }
 
         public override string ToString()

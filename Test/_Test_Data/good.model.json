@@ -1,0 +1,119 @@
+{
+  "Collection": {
+    "Name": "Recipe"
+  },
+  "Properties": {
+    "Name": {
+      "Type": "System.String",
+      "Default": "\"dsdasd\"",
+      //"ValidationPattern": "([A-Z])\\w+",
+      //"Private": false,
+      //"Unique": false, // For EF CORE Indexing.
+      "Attributes": {
+        "Required": ""
+      }
+    }
+  },
+  "kind": "collectionType",
+  "collectionName": "recipes",
+  "info": {
+    "name": "recipes"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "likes": {
+      "type": "biginteger"
+    },
+    "dislikes": {
+      "type": "biginteger"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "recipe_manuals": {
+      "collection": "recipe-manual"
+    },
+    "recipe_materials": {
+      "collection": "recipe-materials",
+      "via": "recipes",
+      "dominant": true
+    },
+    "youtube_video": {
+      "type": "string"
+    },
+    "recipe_comments": {
+      "collection": "recipe-comments"
+    },
+    "recipe_tags": {
+      "collection": "recipe-tags",
+      "via": "recipes",
+      "dominant": true
+    },
+    "recipe_containers": {
+      "collection": "recipe-containers",
+      "via": "recipes",
+      "dominant": true
+    },
+    "recipe_preservative": {
+      "model": "recipe-preservative"
+    },
+    "recipe_title": {
+      "model": "recipe-titles"
+    },
+    "recipe_cautions": {
+      "collection": "recipe-caution",
+      "via": "recipes",
+      "dominant": true
+    },
+    "recipe_allergens": {
+      "collection": "recipe-allergen",
+      "via": "recipes",
+      "dominant": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "recipe_ingredients": {
+      "type": "component",
+      "repeatable": true,
+      "component": "recipe.ingredients"
+    },
+    "recipe_overview": {
+      "model": "recipe-overview"
+    },
+    "recipe_levels": {
+      "collection": "recipe-level",
+      "via": "recipes",
+      "dominant": true
+    },
+    "parent": {
+      "model": "recipes",
+      "via": "children"
+    },
+    "children": {
+      "collection": "recipes",
+      "via": "parent"
+    },
+    "feelings": {
+      "type": "component",
+      "repeatable": true,
+      "component": "recipe.feelings"
+    },
+    "user_favorites": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "recipe_favorites"
+    },
+    "ingredient_list": {
+      "collection": "recipe-ingredient",
+      "via": "recipes",
+      "dominant": true
+    }
+  }
+}
