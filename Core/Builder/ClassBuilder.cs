@@ -115,7 +115,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public virtual string SquashToString()
         {
-            return $@"{String.Join(" ", _Usings.Select(p => p.ToString()))} namespace {_Namespace} {{ {String.Join(" ", _Attributes.Select(p=>p.ToString()))} {_Modifier} class {_Name} {(_Inheritance != null ? $": {_Inheritance}" : "")} {{ {String.Join(" ", _Properties.Select(p => p.ToString()))} {String.Join(" ", _Methods.Select(p => p.ToString()))} }} }}";
+            return $@"{String.Join(" ", _Usings.Select(p => p.ToString()))} {Environment.NewLine} namespace {_Namespace} {{ {Environment.NewLine} {String.Join(" ", _Attributes.Select(p=>p.ToString()))} {_Modifier} class {_Name} {(_Inheritance != null ? $": {_Inheritance}" : "")} {{ {Environment.NewLine} {String.Join(" ", _Properties.Select(p => p.ToString()))} {Environment.NewLine} {String.Join(" ", _Methods.Select(p => p.ToString()))} {Environment.NewLine} }} {Environment.NewLine}  }}";
         }
 
         public override string ToString()

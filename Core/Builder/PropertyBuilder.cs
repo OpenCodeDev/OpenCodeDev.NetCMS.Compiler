@@ -92,14 +92,14 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public virtual string ToAbstact()
         {
-            return $@"{String.Join(" ", _Attributes.Where(p => p._AbstractAllowed).Select(p => p.ToString()))} {_Type}{(_IsNullable?"?":"")} {_Name} {{ get; set;}}";
+            return $@"{String.Join(" ", _Attributes.Where(p => p._AbstractAllowed).Select(p => p.ToString()))} {_Type}{(_IsNullable?"?":"")} {_Name} {{ get; set;}}  {Environment.NewLine}  {Environment.NewLine}";
         }
 
         /// <summary>
         /// Compile the Object to String
         /// </summary>
         public virtual string SquashToString(){
-            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_Type}{(_IsNullable ? "?" : "")} {_Name} {{ {(_HasPrivateGet ? "private" : "")} get; {(_HasPrivateSet ? "private" : "")} set;}} {_Value}";
+            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_Type}{(_IsNullable ? "?" : "")} {_Name} {{ {(_HasPrivateGet ? "private" : "")} get; {(_HasPrivateSet ? "private" : "")} set;}} {_Value} {Environment.NewLine}  {Environment.NewLine}";
         }
 
         public override string ToString()

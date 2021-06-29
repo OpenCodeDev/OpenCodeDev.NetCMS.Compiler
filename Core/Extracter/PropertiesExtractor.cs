@@ -30,7 +30,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Extracter
                         defaultValue = item.Default;
                     }
                     
-                    PropertyBuilder build = new PropertyBuilder(item.Name, type.ToString(), true);
+                    PropertyBuilder build = new PropertyBuilder(item.Name, type.ToString(), item.Private);
                     
                     build.Attribute(attributes);
                     

@@ -20,7 +20,8 @@
       "Default": "\"dsdasd\"",
       "Private": false,
       "Unique": false,
-      "ArgumentOf": [ "Update", "Create", "Find"],
+      "ServerSideOnly": false,
+      "ArgumentOf": [ "Update", "Create", "Find" ],
       "Attributes": [
         {
           "Name": "Required",

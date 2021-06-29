@@ -23,7 +23,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public override string ToString()
         {
-            return $@"[{_Name}({_Params})]";
+            return $@"[{_Name}({_Params})]{Environment.NewLine}";
         }
     }
 }

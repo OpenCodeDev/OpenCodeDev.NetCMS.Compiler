@@ -72,7 +72,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
         /// </summary>
         public virtual string SquashToString()
         {
-            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_ReturnType} {_Name} ({_Params})  {{ {_Body} }}";
+            return $@" {String.Join(" ", _Attributes.Select(p => p.ToString()))} {(_Accessor == null ? $"{(_IsPublic ? "public" : "private")} {(_IsStatic ? "static" : "")}" : _Accessor)} {_ReturnType} {_Name} ({_Params})  {Environment.NewLine} {{ {Environment.NewLine}  {_Body} {Environment.NewLine} }}  {Environment.NewLine}  {Environment.NewLine}";
         }
 
         public override string ToString()

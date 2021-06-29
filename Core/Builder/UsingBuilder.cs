@@ -16,7 +16,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public override string ToString()
         {
-            return $"using {_Using};";
+            return $"using {_Using};{Environment.NewLine}";
         }
     }
 }

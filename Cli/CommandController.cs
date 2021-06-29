@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using OpenCodeDev.NetCMS.Compiler.Cli.Builder;
 using OpenCodeDev.NetCMS.Compiler.Core.Api.Models;
 using System;
 using System.Collections.Generic;
@@ -22,19 +23,19 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 {
                     parts = args[1];
                 }
+                Console.WriteLine("Building NetCMS Resources...");
                 ValidateProject(); // All Config File must be available or throw
-                string sharedJson = File.ReadAllText($"{CurrentProjectDir}\\.netcms_config\\shared.json");
-                JObject sharedSettings = JObject.Parse(sharedJson);
+                Console.WriteLine("Project is Valid.");
 
+                // Load All Models
                 string serverJson = File.ReadAllText($"{CurrentProjectDir}\\.netcms_config\\server.json");
                 JObject serverSettings = JObject.Parse(serverJson);
+                var models = PublicModelController.Build(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir);
 
-                foreach (var modelClass in PublicModelController.Build(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir))
-                {
-                    FileInfo file = new FileInfo($"{CurrentProjectDir}\\.netcms_config\\generated\\shared\\{modelClass._Namespace}.{modelClass._Name}.cs");
-                    file.Directory.Create(); // If the directory already exists, this method does nothing.
-                    File.WriteAllText($"{CurrentProjectDir}\\.netcms_config\\generated\\shared\\{modelClass._Namespace}.cs", modelClass.ToString());
-                }
+                ApiModels.BuildPublicModel(models, CurrentProjectDir); // Build Public Models
+
+                ApiModels.BuildPrivateModel(CurrentProjectDir); // Build Private Models
+                Console.WriteLine("Build Completed");
             }
         }
 

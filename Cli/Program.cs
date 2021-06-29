@@ -11,7 +11,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 throw new Exception("No you must have at least one argument.");
             }
             CommandController.Run(args[0], args);
-            Console.ReadLine();
+            //Console.ReadLine();
         }
     }
 }
