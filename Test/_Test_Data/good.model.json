@@ -2,28 +2,34 @@
   "Collection": {
     "Name": "Recipe"
   },
-  "Properties": {
-    "Name": {
+  "Attributes": [
+    {
+      "Name": "Serializable",
+      "Value": ""
+    },
+    {
+      "Name": "ProtoContract",
+      "Value": ""
+    }
+  ],
+  "Usings": [ "ProtoBuf", "System", "System.Collections.Generic", "System.ComponentModel.DataAnnotations", "System.ComponentModel.DataAnnotations.Schema" ],
+  "Properties": [
+    {
+      "Name": "Name",
       "Type": "System.String",
       "Default": "\"dsdasd\"",
-      //"ValidationPattern": "([A-Z])\\w+",
-      //"Private": false,
-      //"Unique": false, // For EF CORE Indexing.
-      "Attributes": {
-        "Required": ""
-      }
+      "Private": false,
+      "Unique": false,
+      "ArgumentOf": [ "Update", "Create", "Find"],
+      "Attributes": [
+        {
+          "Name": "Required",
+          "Value": ""
+        }
+      ]
     }
-  },
-  "kind": "collectionType",
-  "collectionName": "recipes",
-  "info": {
-    "name": "recipes"
-  },
-  "options": {
-    "increments": true,
-    "timestamps": true
-  },
-  "attributes": {
+  ],
+  "strapi": {
     "likes": {
       "type": "biginteger"
     },

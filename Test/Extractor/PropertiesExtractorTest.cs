@@ -20,11 +20,20 @@ namespace OpenCodeDev.NetCMS.Compiler.Test
         public void Test_Property_Integrity()
         {
             string path = Directory.GetCurrentDirectory();
-            JObject code = JObject.Parse(File.ReadAllText($"{path}\\_Test_Data\\good.model.json"));
-
-            PropertiesExtractor extracted = new PropertiesExtractor(code);
+            PropertiesExtractor extracted = new PropertiesExtractor(File.ReadAllText($"{path}\\_Test_Data\\good.model.json"));
             var prop = extracted._Props.Where(p => p._Name.Equals("Name")).First();
-            Assert.AreEqual(@"= ""dsdasd"";", prop._Value);
+            Assert.AreEqual(@"= ""dsdasd"";".Replace(" ", String.Empty), prop._Value.Replace(" ", String.Empty));
         }
+
+        [TestMethod]
+        public void Test_Prop_Integrity_Attributes()
+        {
+            string path = Directory.GetCurrentDirectory();
+            PropertiesExtractor extracted = new PropertiesExtractor(File.ReadAllText($"{path}\\_Test_Data\\good.model.json"));
+            var prop = extracted._Props.Where(p => p._Name.Equals("Name")).First();
+            Assert.AreEqual(@"[Required()]", prop._Attributes.Where(p => p._Name.Equals("Required")).First().ToString().Replace(" ", String.Empty));
+        }
+
+
     }
 }

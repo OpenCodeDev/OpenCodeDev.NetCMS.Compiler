@@ -3,10 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\packages\OpenCodeDev.NetCMS.Compiler.Server\</OutputPath>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   
   <ItemGroup>
+    <PackageReference Include="ILMerge" Version="3.0.41" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,7 +24,6 @@
     </PackageReference>
 
     <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   
@@ -26,27 +32,5 @@
   </ItemGroup>
 
   
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  
-  <ItemGroup>
-    <Compile Update="Resource1.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resource1.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  
-  <ItemGroup>
-    <EmbeddedResource Update="Resource1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
 
 </Project>

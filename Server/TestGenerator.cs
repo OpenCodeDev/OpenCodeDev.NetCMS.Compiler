@@ -1,7 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenCodeDev.NetCMS.Compiler.Core.Builder;
 using System;
 using System.Collections.Generic;
