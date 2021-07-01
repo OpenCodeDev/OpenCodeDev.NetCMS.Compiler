@@ -104,7 +104,8 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public override string ToString()
         {
-            return (_Inline == null ? SquashToString() : _Inline);
+            string code = (_Inline == null ? SquashToString() : $"{_Inline} {Environment.NewLine}");
+            return code;
         }
     }
 }

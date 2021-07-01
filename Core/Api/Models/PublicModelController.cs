@@ -33,7 +33,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
                 // Assign Base of Namespace.
                 string baseNamespace = sharedSettings.Namespace;
                 // Create the mandatory ID Property
-                PropertyBuilder IdProp = Quickies.CreateIdProp();
+                PropertyBuilder IdProp = Quickies.CreateIdEFProp();
                 CollectionModel collection = JsonSerializer.Deserialize<CollectionModel>(json);
                 // Assign Model Name
                 string name = collection.Collection.Name;

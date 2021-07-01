@@ -21,7 +21,7 @@
       "Private": false,
       "Unique": false,
       "ServerSideOnly": false,
-      "ArgumentOf": [ "Update", "Create", "Find" ],
+      "ArgumentOf": [ "Update", "Create", "Fetch" ],
       "Attributes": [
         {
           "Name": "Required",

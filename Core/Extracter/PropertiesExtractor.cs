@@ -21,7 +21,6 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Extracter
         private void LoopProps(List<PropertiesItemModel> items){
             foreach (var item in items)
             {
-                    Type type = TypeHandler.ConvertStringToType(item.Type);
                     List<AttributeBuilder> attributes = new AttributesExtractor(item.Attributes).ToList();
 
                     string defaultValue = null;
@@ -30,7 +29,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Extracter
                         defaultValue = item.Default;
                     }
                     
-                    PropertyBuilder build = new PropertyBuilder(item.Name, type.ToString(), item.Private);
+                    PropertyBuilder build = new PropertyBuilder(item.Name, item.Type, item.Private);
                     
                     build.Attribute(attributes);
                     

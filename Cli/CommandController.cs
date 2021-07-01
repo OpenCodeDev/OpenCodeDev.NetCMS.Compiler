@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using OpenCodeDev.NetCMS.Compiler.Cli.Builder;
+using OpenCodeDev.NetCMS.Compiler.Cli.Builder.Messages;
+using OpenCodeDev.NetCMS.Compiler.Core.Api;
 using OpenCodeDev.NetCMS.Compiler.Core.Api.Models;
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 }
                 Console.WriteLine("Building NetCMS Resources...");
                 ValidateProject(); // All Config File must be available or throw
+                Directory.Delete($"{CurrentProjectDir}\\.netcms_config\\generated", true);
                 Console.WriteLine("Project is Valid.");
 
                 // Load All Models
@@ -33,8 +36,21 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 var models = PublicModelController.Build(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir);
 
                 ApiModels.BuildPublicModel(models, CurrentProjectDir); // Build Public Models
+                // Build Private Models
+                ApiModels.BuildPrivateModel(CurrentProjectDir); 
+                // Predicate Model
+                ApiModels.CreateModelCSFiles(SystemController.BuildPredicateModel(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                // Fetch Request Model
+                ApiModels.CreateModelCSFiles(SystemController.BuildFetchRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                // Fetch One Request
+                ApiModels.CreateModelCSFiles(SystemController.BuildFetchOneRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                // Update Request
+                ApiModels.CreateModelCSFiles(SystemController.BuildUpdateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                ApiModels.CreateModelCSFiles(SystemController.BuildUpdateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                ApiModels.CreateModelCSFiles(SystemController.BuildCreateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                // Grpc Controller Access
+                ApiModels.CreateControllerCSFiles(SystemController.BuildControllersInterfaces(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
 
-                ApiModels.BuildPrivateModel(CurrentProjectDir); // Build Private Models
                 Console.WriteLine("Build Completed");
             }
         }

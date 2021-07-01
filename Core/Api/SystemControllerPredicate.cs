@@ -13,8 +13,13 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
     
     public static partial class SystemController
     {
-        const string tet = "SDASd";
-        public static void BuildPredicateModel(string rootDir, string settingsDir)
+        /// <summary>
+        /// Build Predicate Model used for Custom Search
+        /// </summary>
+        /// <param name="rootDir"></param>
+        /// <param name="settingsDir"></param>
+        /// <returns></returns>
+        public static List<ClassBuilder> BuildPredicateModel(string rootDir, string settingsDir)
         {
             // Load Shared Settings
             string buildSharedSettingFile = $"{settingsDir}\\.netcms_config\\shared.json";
@@ -27,7 +32,6 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
 
             string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
-            List<ClassBuilder> ListOfModel = new List<ClassBuilder>();
 
             // List All File located to "Configuration";
             string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
@@ -44,18 +48,22 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 $"{sharedSettings.Namespace}.Api.{collection.Collection.Name}.Messages", "public partial")
                 { _Inheritance = $"ConditionBase" };
                 cBuild.Attribute(new AttributeBuilder("ProtoContact"));
-                cBuild.Using("OpenCodeDev.NetCMS.Core.Shared.Api.Messages", "ProtoBuf"); // Add Parent's Namespace
+                cBuild.Using("ProtoBuf"); // Add Parent's Namespace
                 // Extract Allowed Fields
                 List<PropertiesItemModel> allowedProps = props.Where(p=>p.ArgumentOf.Contains("Fetch")).ToList();
+                allowedProps.Insert(0, new PropertiesItemModel() { Name = "Id", Type = "System.Guid", ArgumentOf = new List<string>() { "Fetch" } });
                 // Assign Fields as Enum Options
-                cBuild.Property(new PropertyBuilder($"public enum Fields {{ {String.Join(", ", allowedProps.Select(p=>p.Name))} }}"));
                 cBuild.Property(new PropertyBuilder("[ProtoMember(1)] public Fields Field { get; set; }"));
-                string getFieldTypeBody = $@"switch (Field) {{ {String.Join(", ", allowedProps.Select(p => $"case Fields.{p.Name}: return typeof({p.Type});"))} }} throw new RpcException(new Status(StatusCode.Unknown, ""Server misconfiguration tries to pass un supported type of data, contact support.""));";
+                cBuild.Property(new PropertyBuilder($"public enum Fields {{ {String.Join(", ", allowedProps.Select(p=>p.Name))} }}"));
+
+                
+                string getFieldTypeBody = $@"switch (Field) {{ {String.Join(" ", allowedProps.Select(p => $"case Fields.{p.Name}: return typeof({p.Type});"))} }} throw new RpcException(new Status(StatusCode.Unknown, ""Server misconfiguration tries to pass un supported type of data, contact support.""));";
                 cBuild.Method(new MethodBuilder("GetFieldType", "Type", true, getFieldTypeBody, ""));
 
 
-                ListOfModel.Add(cBuild);
+                _PredicateModels.Add(cBuild);
             }
+            return _PredicateModels;
         }
     }
 }

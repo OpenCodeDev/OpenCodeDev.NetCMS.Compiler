@@ -7,5 +7,10 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder.JsonModel
     public class AttributesModel
     {
         public List<AttributesItemModel> Attributes { get; set; }
+
+        internal AttributesModel Where()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

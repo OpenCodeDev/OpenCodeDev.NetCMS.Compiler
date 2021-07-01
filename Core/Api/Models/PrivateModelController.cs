@@ -40,7 +40,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
                 // Load Full Model
                 string json = File.ReadAllText(file);
                 // Create the mandatory ID Property
-                PropertyBuilder IdProp = Quickies.CreateIdProp();
+                PropertyBuilder IdProp = Quickies.CreateIdEFProp();
                 CollectionModel collection = JsonSerializer.Deserialize<CollectionModel>(json);
                 // Assign Model Name
                 string name = collection.Collection.Name;

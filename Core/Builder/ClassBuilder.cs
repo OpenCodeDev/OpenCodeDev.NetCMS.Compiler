@@ -83,7 +83,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public void Method(MethodBuilder item)
         {
-            if (_Methods.Count(p => p._Name == item._Name) <= 0)
+            if (_Methods.Count(p => p._Inline == null && p._Name == item._Name) <= 0)
             {
                 _Methods.Add(item);
             }
@@ -99,7 +99,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public void Property(PropertyBuilder prop)
         {
-            if (_Properties.Count(p => p._Name == prop._Name) <= 0)
+            if (_Properties.Count(p => p._Inline == null && p._Name == prop._Name) <= 0)
             {
                 _Properties.Add(prop);
             }
@@ -115,12 +115,13 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public virtual string SquashToString()
         {
+            
             return $@"{String.Join(" ", _Usings.Select(p => p.ToString()))} {Environment.NewLine} namespace {_Namespace} {{ {Environment.NewLine} {String.Join(" ", _Attributes.Select(p=>p.ToString()))} {_Modifier} class {_Name} {(_Inheritance != null ? $": {_Inheritance}" : "")} {{ {Environment.NewLine} {String.Join(" ", _Properties.Select(p => p.ToString()))} {Environment.NewLine} {String.Join(" ", _Methods.Select(p => p.ToString()))} {Environment.NewLine} }} {Environment.NewLine}  }}";
         }
 
         public override string ToString()
         {
-            return (_Inline == null ? SquashToString() : _Inline);
+            return (_Inline == null ? SquashToString() : $"{_Inline} {Environment.NewLine}");
         }
     }
 }

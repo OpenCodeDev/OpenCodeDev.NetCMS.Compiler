@@ -64,7 +64,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public virtual string ToAbstact(){
             string rT = (_ReturnType.Contains("async") ? _ReturnType.Replace("async", String.Empty) : _ReturnType);
-            return $@"{String.Join(" ", _Attributes.Where(p=>p._AbstractAllowed).Select(p => p.ToString()))} {rT} {_Name} ({_Params});";
+            return $@"{String.Join(" ", _Attributes.Where(p=>p._AbstractAllowed).Select(p => p.ToString()))} {rT} {_Name} ({_Params}); {Environment.NewLine}";
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public override string ToString()
         {
-            return (_Inline == null ? SquashToString() : _Inline);
+            return (_Inline == null ? SquashToString() : $"{_Inline} {Environment.NewLine}");
         }
     }
 }
