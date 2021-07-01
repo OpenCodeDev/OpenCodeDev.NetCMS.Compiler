@@ -88,10 +88,8 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 var _LimitProp = new PropertyBuilder("Limit", "System.Int32", true);
                 _LimitProp.Attribute(new AttributeBuilder("ProtoMember", "2"));
                 _LimitProp.Attribute(new AttributeBuilder("Required", ""));
-                _LimitProp.Attribute(new AttributeBuilder("Range", @"10, 400, ErrorMessage = ""The field { 0 } must be greater than { 1}."""));
+                _LimitProp.Attribute(new AttributeBuilder("Range", @"10, 400, ErrorMessage = ""The field {0} must be greater than {1}."""));
                 cBuild.Property(_LimitProp);
-
-
                 _Models.Add(cBuild);
             }
             return _Models;
@@ -110,6 +108,47 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
         public static List<ClassBuilder> BuildCreateRequest(string rootDir, string sharedSettingsDir)
         {
             return BuildChangeRequestModel(rootDir, sharedSettingsDir, "CreateRequest", "Create");
+        }
+
+
+
+        private static List<ClassBuilder> BuildApiServiceServer(string rootDir, string sharedSettingsDir)
+        {
+            // Load Shared Settings
+            string buildSharedSettingFile = $"{sharedSettingsDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
+
+            string buildServerSettingFile = $"{sharedSettingsDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+            List<ClassBuilder> ListOfModel = new List<ClassBuilder>();
+            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            Console.WriteLine($"Scanning Public Models In {modelDir}");
+            // List All File located to "Configuration";
+
+            string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
+            Console.WriteLine($"Parsing {files.Length} Public Models");
+            foreach (var file in files)
+            {
+                // Load Full Model
+                string json = File.ReadAllText(file);
+                // Assign Base of Namespace.
+                string baseNamespace = serverSettings.Namespace;
+
+                CollectionModel collection = JsonSerializer.Deserialize<CollectionModel>(json);
+                // Assign Model Name
+                string name = collection.Collection.Name;
+                var listAllowedProps = JsonSerializer.Deserialize<PropertiesModel>(json).Properties;
+                // Build full class.
+                ClassBuilder cBuild = new ClassBuilder($"{name}CoreService", $"{baseNamespace}.Api.{name}.Services", "internal ");
+                var conditionHandler = new MethodBuilder("", $"Predicate<{sharedSettings}.Api.{name}.Models.{name}PublicModel>", false);
+                cBuild.Using(new UsingsExtractor(json).ToList());
+                cBuild.Property(new PropertiesExtractor(listAllowedProps).ToList());
+                ListOfModel.Add(cBuild);
+            }
+            return ListOfModel;
         }
 
         private static List<ClassBuilder>BuildChangeRequestModel (string rootDir, string sharedSettingsDir, string modelName, string argumentOf)

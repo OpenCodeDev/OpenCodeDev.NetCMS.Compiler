@@ -27,6 +27,19 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Builder
             }
         }
 
+        public static void CreateServiceCSFiles(List<ClassBuilder> onBuilderRequest, string currentProjectDir, string side) {
+            string serverJson = File.ReadAllText($"{currentProjectDir}\\.netcms_config\\server.json");
+            JObject serverSettings = JObject.Parse(serverJson);
+
+            foreach (var modelClass in onBuilderRequest)
+            {
+                FileInfo file = new FileInfo($"{currentProjectDir}\\.netcms_config\\generated\\{side}\\{modelClass._Namespace}.{modelClass._Name}.cs");
+                file.Directory.Create(); // If the directory already exists, this method does nothing.
+                File.WriteAllText($"{currentProjectDir}\\.netcms_config\\generated\\{side}\\{modelClass._Namespace}.{modelClass._Name}.cs", modelClass.ToString());
+
+            }
+        }
+        
         public static void CreateControllerCSFiles(List<InterfaceBuilder> onBuilderRequest, string currentProjectDir, string side)
         {
             string serverJson = File.ReadAllText($"{currentProjectDir}\\.netcms_config\\server.json");
