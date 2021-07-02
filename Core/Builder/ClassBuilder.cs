@@ -6,9 +6,9 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 {
     public class ClassBuilder
     {
-        public string _Name { get; private set; }
-        public string _Modifier { get; private set; }
-        public string _Namespace { get; private set; }
+        public string _Name { get; set; }
+        public string _Modifier { get; set; }
+        public string _Namespace { get; set; }
 
         public string _Inheritance { get; set; }
 
@@ -26,6 +26,8 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
         {
             _Inline = pInline;
         }
+
+
 
         public ClassBuilder(string cName, string pNamespace, string cModifier)
         {

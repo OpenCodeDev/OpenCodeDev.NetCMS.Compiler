@@ -112,7 +112,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
 
 
 
-        private static List<ClassBuilder> BuildApiServiceServer(string rootDir, string sharedSettingsDir)
+        public static List<ClassBuilder> BuildGRPCControllerEndpoints(string rootDir, string sharedSettingsDir)
         {
             // Load Shared Settings
             string buildSharedSettingFile = $"{sharedSettingsDir}\\.netcms_config\\shared.json";
@@ -141,11 +141,62 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 // Assign Model Name
                 string name = collection.Collection.Name;
                 var listAllowedProps = JsonSerializer.Deserialize<PropertiesModel>(json).Properties;
+                var updateProps = listAllowedProps.Where(p => p.ArgumentOf.Contains("Update")).ToList();
+
+
+                string template = File.ReadAllText($"{sharedSettingsDir}\\.netcms_config\\templates\\ApiControllerEndpoints.cs");
+                template = template.Replace("_NAMESPACE_BASE_SERVER_", baseNamespace)
+                .Replace("_API_NAME_", collection.Collection.Name)
+                .Replace("_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace);
+
                 // Build full class.
-                ClassBuilder cBuild = new ClassBuilder($"{name}CoreService", $"{baseNamespace}.Api.{name}.Services", "internal ");
-                var conditionHandler = new MethodBuilder("", $"Predicate<{sharedSettings}.Api.{name}.Models.{name}PublicModel>", false);
-                cBuild.Using(new UsingsExtractor(json).ToList());
-                cBuild.Property(new PropertiesExtractor(listAllowedProps).ToList());
+                ClassBuilder cBuild = new ClassBuilder(template)
+                { _Name = $"{collection.Collection.Name}ControllerEndpoints", _Namespace = $"{baseNamespace}.Api.{collection.Collection.Name}.Controllers" };
+                ListOfModel.Add(cBuild);
+            }
+            return ListOfModel;
+        }
+        public static List<ClassBuilder> BuildApiServiceServer(string rootDir, string sharedSettingsDir)
+        {
+            // Load Shared Settings
+            string buildSharedSettingFile = $"{sharedSettingsDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
+
+            string buildServerSettingFile = $"{sharedSettingsDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+            List<ClassBuilder> ListOfModel = new List<ClassBuilder>();
+            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            Console.WriteLine($"Scanning Public Models In {modelDir}");
+            // List All File located to "Configuration";
+
+            string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
+            Console.WriteLine($"Parsing {files.Length} Public Models");
+            foreach (var file in files)
+            {
+                // Load Full Model
+                string json = File.ReadAllText(file);
+                // Assign Base of Namespace.
+                string baseNamespace = serverSettings.Namespace;
+
+                CollectionModel collection = JsonSerializer.Deserialize<CollectionModel>(json);
+                // Assign Model Name
+                string name = collection.Collection.Name;
+                var listAllowedProps = JsonSerializer.Deserialize<PropertiesModel>(json).Properties;
+                var updateProps = listAllowedProps.Where(p => p.ArgumentOf.Contains("Update")).ToList();
+
+
+                string template = File.ReadAllText($"{sharedSettingsDir}\\.netcms_config\\templates\\ApiCoreServices.cs");
+                template = template.Replace("_NAMESPACE_BASE_SERVER_", baseNamespace)
+                .Replace("_API_NAME_", collection.Collection.Name)
+                .Replace("_UPDATE_FILTER_BODY_", String.Join($"{Environment.NewLine}", updateProps.Select(p=> $"current.{p.Name} = changed.{p.Name};")))
+                .Replace("_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace);
+                
+                // Build full class.
+                ClassBuilder cBuild = new ClassBuilder(template) 
+                { _Name = $"{collection.Collection.Name}CoreService", _Namespace = $"{baseNamespace}.Api.{collection.Collection.Name}.Services"};
                 ListOfModel.Add(cBuild);
             }
             return ListOfModel;

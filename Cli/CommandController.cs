@@ -50,7 +50,8 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 ApiModels.CreateModelCSFiles(SystemController.BuildCreateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
 
                 // Create Service Api (Server)
-                ApiModels.CreateModelCSFiles(SystemController.BuildCreateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
+                ApiModels.CreateCSFiles(SystemController.BuildApiServiceServer(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "server");
+                ApiModels.CreateCSFiles(SystemController.BuildGRPCControllerEndpoints(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "server");
 
 
                 // Grpc Controller Access
