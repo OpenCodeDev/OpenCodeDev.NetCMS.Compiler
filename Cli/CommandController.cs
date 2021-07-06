@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace OpenCodeDev.NetCMS.Compiler.Cli
 {
+/// <summary>
+/// 
+/// </summary>
     public static class CommandController
     {
         public static string CurrentProjectDir { get; set; }
@@ -35,28 +38,28 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 JObject serverSettings = JObject.Parse(serverJson);
                 var models = PublicModelController.Build(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir);
 
+                SystemController.FingerprintInfo = Commenter.Info();
+
                 ApiModels.BuildPublicModel(models, CurrentProjectDir); // Build Public Models
                 // Build Private Models
-                ApiModels.BuildPrivateModel(CurrentProjectDir); 
-                // Predicate Model
-                ApiModels.CreateModelCSFiles(SystemController.BuildPredicateModel(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
-                // Fetch Request Model
+                ApiModels.BuildPrivateModel(CurrentProjectDir);
+                
+                // Build System from Models
+                SystemController.BuildControllerEndpointsTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+                SystemController.BuildControllerInterfaceEndpointsTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
+                SystemController.BuildCoreServiceTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+                SystemController.BuildPredicateConditions(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
+                SystemController.BuildControllerLogicTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+                SystemController.BuildDatabaseTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+
+                //// Predicate Model
+                //ApiModels.CreateModelCSFiles(SystemController.BuildPredicateModel(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
                 ApiModels.CreateModelCSFiles(SystemController.BuildFetchRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
-                // Fetch One Request
                 ApiModels.CreateModelCSFiles(SystemController.BuildFetchOneRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
-                // Update Request
                 ApiModels.CreateModelCSFiles(SystemController.BuildUpdateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
                 ApiModels.CreateModelCSFiles(SystemController.BuildUpdateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
                 ApiModels.CreateModelCSFiles(SystemController.BuildCreateRequest(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
-
-                // Create Service Api (Server)
-                ApiModels.CreateCSFiles(SystemController.BuildApiServiceServer(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "server");
-                ApiModels.CreateCSFiles(SystemController.BuildGRPCControllerEndpoints(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "server");
-
-
-                // Grpc Controller Access
-                ApiModels.CreateControllerCSFiles(SystemController.BuildControllersInterfaces(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir), CurrentProjectDir, "shared");
-
+               
                 Console.WriteLine("Build Completed");
             }
         }

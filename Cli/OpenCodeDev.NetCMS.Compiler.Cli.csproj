@@ -4,6 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>NetCMS</AssemblyName>
+    <Version>0.1.0.1200</Version>
+    <Copyright>OpenCodeDev © 2021</Copyright>
+    <Description>Official NetCMS command line interface compiler for .NET, EF CORE model based auto-generated CMS. Will compiler shared resources and server resources.</Description>
+    <RepositoryUrl>https://github.com/OpenCodeDev/OpenCodeDev.NetCMS.Compiler</RepositoryUrl>
+    <RepositoryType>Open Source (MIT)</RepositoryType>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

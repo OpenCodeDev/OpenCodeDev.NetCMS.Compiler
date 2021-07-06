@@ -4,6 +4,7 @@ using OpenCodeDev.NetCMS.Compiler.Core.Extracter;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
@@ -35,6 +36,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
                 // Create the mandatory ID Property
                 PropertyBuilder IdProp = Quickies.CreateIdEFProp();
                 CollectionModel collection = JsonSerializer.Deserialize<CollectionModel>(json);
+                var props = JsonSerializer.Deserialize<PropertiesModel>(json).Properties;
                 // Assign Model Name
                 string name = collection.Collection.Name;
                 // Make sure namespace has basic validity
@@ -46,7 +48,9 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
                 ClassBuilder cBuild = new ClassBuilder($"{name}PublicModel", $"{baseNamespace}.Api.{name}.Models", "public partial");
                 cBuild.Using(new UsingsExtractor(json).ToList());
                 cBuild.Attribute(new AttributesExtractor(json).ToList());
-                cBuild.Property(new PropertiesExtractor(json).ToList());
+                // Props that are Index and Unique like license plate, social security or 
+                cBuild.Attribute(props.Where(p=> !p.Private && !p.ServerSideOnly && p.Unique).Select(p=> new AttributeBuilder("Index", $"nameof({p.Name}), IsUnique=true")).ToList());
+                cBuild.Property(new PropertiesExtractor(props.Where(p => !p.ServerSideOnly).ToList()).ToList());
                 cBuild.Property(IdProp);
                 ListOfModel.Add(cBuild);
                 progress?.Report(prog/ (files.Length * 2));

@@ -50,7 +50,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Builder
 
             }
         }
-        
+
         public static void CreateControllerCSFiles(List<InterfaceBuilder> onBuilderRequest, string currentProjectDir, string side)
         {
             string serverJson = File.ReadAllText($"{currentProjectDir}\\.netcms_config\\server.json");
@@ -63,6 +63,17 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Builder
                 File.WriteAllText($"{currentProjectDir}\\.netcms_config\\generated\\{side}\\{model._Namespace}.{model._Name}.cs", model.ToString());
 
             }
+        }
+
+        public static void CreateDatabaseCSFiles(ClassBuilder onBuilderRequest, string currentProjectDir, string side)
+        {
+            string serverJson = File.ReadAllText($"{currentProjectDir}\\.netcms_config\\server.json");
+            JObject serverSettings = JObject.Parse(serverJson);
+
+            FileInfo file = new FileInfo($"{currentProjectDir}\\.netcms_config\\generated\\{side}\\{onBuilderRequest._Namespace}.{onBuilderRequest._Name}.cs");
+            file.Directory.Create(); // If the directory already exists, this method does nothing.
+            File.WriteAllText($"{currentProjectDir}\\.netcms_config\\generated\\{side}\\{onBuilderRequest._Namespace}.{onBuilderRequest._Name}.cs", onBuilderRequest.ToString());
+
         }
 
         public static void BuildPublicModel(List<ClassBuilder> models, string CurrentProjectDir)

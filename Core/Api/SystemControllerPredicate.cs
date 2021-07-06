@@ -47,7 +47,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 ClassBuilder cBuild = new ClassBuilder($"{collection.Collection.Name}PredicateCondition", 
                 $"{sharedSettings.Namespace}.Api.{collection.Collection.Name}.Messages", "public partial")
                 { _Inheritance = $"ConditionBase" };
-                cBuild.Attribute(new AttributeBuilder("ProtoContact"));
+                cBuild.Attribute(new AttributeBuilder("ProtoContract"));
                 cBuild.Using("ProtoBuf"); // Add Parent's Namespace
                 // Extract Allowed Fields
                 List<PropertiesItemModel> allowedProps = props.Where(p=>p.ArgumentOf.Contains("Fetch")).ToList();
