@@ -55,7 +55,13 @@ namespace OpenCodeDev.NetCMS.Compiler.Core
         public static PropertyBuilder CreateFetchConditionProp(string name, int order, string ApiName)
         {
             PropertyBuilder prop = new PropertyBuilder(name, $"List<{ApiName}PredicateConditions>", true);
-            prop.Attribute("Required", $@"ErrorMessage = ""Field '{name}' is required""");
+            prop.Attribute("ProtoMember", $"{order}");
+            return prop;
+        }
+
+        public static PropertyBuilder CreateFetchOrderByProp(string name, int order, string ApiName)
+        {
+            PropertyBuilder prop = new PropertyBuilder(name, $"List<{ApiName}PredicateOrdering>", true);
             prop.Attribute("ProtoMember", $"{order}");
             return prop;
         }

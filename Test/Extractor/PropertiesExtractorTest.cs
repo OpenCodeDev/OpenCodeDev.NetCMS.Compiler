@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace OpenCodeDev.NetCMS.Compiler.Test
 {
+
     [TestClass]
     public class PropertiesExtractorTest
     {

@@ -48,7 +48,10 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 SystemController.BuildControllerEndpointsTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
                 SystemController.BuildControllerInterfaceEndpointsTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
                 SystemController.BuildCoreServiceTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+                
+                SystemController.BuildCoreServiceExtensionTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
                 SystemController.BuildPredicateConditions(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
+                SystemController.BuildPredicateOrderBy(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
                 SystemController.BuildControllerLogicTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
                 SystemController.BuildDatabaseTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
 

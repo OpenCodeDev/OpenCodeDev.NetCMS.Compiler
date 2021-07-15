@@ -153,6 +153,44 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             }
 
         }
+        public static void BuildCoreServiceExtensionTemplateClass(string projectRootDir, string solutionDir, string side)
+        {
+            string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
+
+            string buildServerSettingFile = $"{solutionDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+
+
+            Dictionary<string, PropertiesModel> _ApiList = GetProps(solutionDir, projectRootDir);
+            foreach (var item in _ApiList)
+            {
+                string template = FillTemplate(LoadTemplate(solutionDir, "ApiCoreServicesExt"),
+                new Dictionary<string, string>() {
+                { "_NAMESPACE_BASE_SERVER_", serverSettings.Namespace },
+                { "_API_NAME_", item.Key },
+                { "_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace}
+                });
+
+                // Extract Valid Props
+                var props = item.Value.Properties.Where(p => !p.ServerSideOnly && !p.Private && p.ArgumentOf.Contains("Fetch")).ToList();
+                
+                string casePropsOrderBy = $@"{String.Join(Environment.NewLine, props.Select(p => $"case {item.Key}PredicateOrdering.Fields.{p.Name}: {Environment.NewLine} return orderType == OrderType.Ascending ? query.OrderBy(p => p.{p.Name}) : query.OrderByDescending(p => p.{p.Name});"))}";
+                string casePropsThenBy = $@"{String.Join(Environment.NewLine, props.Select(p => $"case {item.Key}PredicateOrdering.Fields.{p.Name}: {Environment.NewLine} return orderType == OrderType.Ascending ? query.ThenBy(p => p.{p.Name}) : query.ThenByDescending(p => p.{p.Name});"))}";
+                // Filling Template.
+                template = template
+                .Replace("//_MODEL_ORDERABLE_FIELD_ORDERBY_", casePropsOrderBy)
+                .Replace("//_MODEL_ORDERABLE_FIELD_THENBY_", casePropsThenBy);
+
+                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Api.{item.Key}.Services.{item.Key}CoreServicesExt.cs");
+                file.Directory.Create();
+                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Api.{item.Key}.Services.{item.Key}CoreServicesExt.cs", template);
+            }
+
+        }
 
         public static void BuildControllerInterfaceEndpointsTemplateClass(string projectRootDir, string solutionDir, string side)
         {
@@ -200,6 +238,9 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             return _ApiList;
         }
 
+        /// <summary>
+        /// Build Code-First Database
+        /// </summary>
         public static void BuildDatabaseTemplateClass(string projectRootDir, string solutionDir, string side)
         {
             string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
@@ -228,6 +269,9 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
 
         }
 
+        /// <summary>
+        /// Build Fetch Condition Message Data Contract.
+        /// </summary>
         public static void BuildPredicateConditions(string projectRootDir, string solutionDir, string side)
         {
             string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
@@ -264,7 +308,47 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
 
         }
 
+        /// <summary>
+        /// Build a Fetch OrderBy Definition.
+        /// </summary>
+        /// <param name="projectRootDir"></param>
+        /// <param name="solutionDir"></param>
+        /// <param name="side"></param>
+        public static void BuildPredicateOrderBy(string projectRootDir, string solutionDir, string side)
+        {
+            string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
 
+            string buildServerSettingFile = $"{solutionDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+
+
+            Dictionary<string, PropertiesModel> _ApiList = GetProps(solutionDir, projectRootDir);
+            foreach (var item in _ApiList)
+            {
+                string template = FillTemplate(LoadTemplate(solutionDir, "ApiPredicateOrdering"),
+                new Dictionary<string, string>() {
+                { "_NAMESPACE_BASE_SERVER_", serverSettings.Namespace },
+                { "_API_NAME_", item.Key },
+                { "_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace}
+                });
+                var props = item.Value.Properties.Where(p => !p.ServerSideOnly && !p.Private && p.ArgumentOf.Contains("Fetch")).ToList();
+                props.Insert(0, new PropertiesItemModel() { Name = "Id", Type = "System.Guid", ArgumentOf = new List<string>() { "Fetch" } });
+                string getFieldTypeBody = $@"{String.Join(Environment.NewLine, props.Select(p => $"case Fields.{p.Name}: {Environment.NewLine} return typeof({p.Type});"))}";
+                // Filling Template.
+                template = template
+                .Replace("//_FIELDS_ENUM_", String.Join($", {Environment.NewLine}", props.Select(p => p.Name)))
+                .Replace("//_GET_TYPE_SWITCH_", getFieldTypeBody);
+
+                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{sharedSettings.Namespace}.Api.{item.Key}.Messages.{item.Key}PredicateOrdering.cs");
+                file.Directory.Create();
+                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{sharedSettings.Namespace}.Api.{item.Key}.Messages.{item.Key}PredicateOrdering.cs", template);
+            }
+
+        }
         public static List<ClassBuilder> BuildFetchOneRequest(string rootDir, string settingsDir)
         {
             // Load Shared Settings
@@ -336,10 +420,11 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 cBuild.Using($"{sharedSettings.Namespace}.Api.{collection.Collection.Name}.Messages", "ProtoBuf", "System", "System.ComponentModel.DataAnnotations", "System.Collections.Generic");
                 // Assign Fields as Enum Options
                 cBuild.Property(Quickies.CreateFetchConditionProp("Conditions", 1, collection.Collection.Name));
+                cBuild.Property(Quickies.CreateFetchOrderByProp("OrderBy", 2, collection.Collection.Name));
 
                 // Limit Prop
                 var _LimitProp = new PropertyBuilder("Limit", "System.Int32", true);
-                _LimitProp.Attribute(new AttributeBuilder("ProtoMember", "2"));
+                _LimitProp.Attribute(new AttributeBuilder("ProtoMember", "3"));
                 _LimitProp.Attribute(new AttributeBuilder("Required", ""));
                 _LimitProp.Attribute(new AttributeBuilder("Range", @"10, 400, ErrorMessage = ""The field {0} must be greater than {1}."""));
                 cBuild.Property(_LimitProp);

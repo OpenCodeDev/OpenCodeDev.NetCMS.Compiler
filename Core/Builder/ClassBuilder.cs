@@ -20,7 +20,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder
 
         public List<AttributeBuilder> _Attributes { get; private set; } = new List<AttributeBuilder>();
 
-        public string _Inline { get; private set; }
+        public string _Inline { get;  set; }
 
         public ClassBuilder(string pInline)
         {
