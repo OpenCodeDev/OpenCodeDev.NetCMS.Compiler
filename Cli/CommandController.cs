@@ -50,6 +50,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 SystemController.BuildCoreServiceTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
                 
                 SystemController.BuildCoreServiceExtensionTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");
+                SystemController.BuildPredicateConditionExtTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
                 SystemController.BuildPredicateConditions(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
                 SystemController.BuildPredicateOrderBy(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "shared");
                 SystemController.BuildControllerLogicTemplateClass(serverSettings.SelectToken("RootCode").ToString(), CurrentProjectDir, "server");

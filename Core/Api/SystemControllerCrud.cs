@@ -180,10 +180,12 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 
                 string casePropsOrderBy = $@"{String.Join(Environment.NewLine, props.Select(p => $"case {item.Key}PredicateOrdering.Fields.{p.Name}: {Environment.NewLine} return orderType == OrderType.Ascending ? query.OrderBy(p => p.{p.Name}) : query.OrderByDescending(p => p.{p.Name});"))}";
                 string casePropsThenBy = $@"{String.Join(Environment.NewLine, props.Select(p => $"case {item.Key}PredicateOrdering.Fields.{p.Name}: {Environment.NewLine} return orderType == OrderType.Ascending ? query.ThenBy(p => p.{p.Name}) : query.ThenByDescending(p => p.{p.Name});"))}";
+                string casePropsWhere = $@"{String.Join(Environment.NewLine, props.Select(p => $"case {item.Key}PredicateConditions.Fields.{p.Name}: {Environment.NewLine} nonRelationField = p => myServiceBase.ConditionTypeDelegator(item.Conditions, p.{p.Name}, item.Value, typeof({p.Type})); break;"))}";
                 // Filling Template.
                 template = template
                 .Replace("//_MODEL_ORDERABLE_FIELD_ORDERBY_", casePropsOrderBy)
-                .Replace("//_MODEL_ORDERABLE_FIELD_THENBY_", casePropsThenBy);
+                .Replace("//_MODEL_ORDERABLE_FIELD_THENBY_", casePropsThenBy)
+                .Replace("//_WHERE_CONDITION_PUBLIC_FETCH_FIELDS_", casePropsWhere);
 
                 FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Api.{item.Key}.Services.{item.Key}CoreServicesExt.cs");
                 file.Directory.Create();
@@ -266,6 +268,22 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Database.DatabaseBase.cs");
             file.Directory.Create();
             File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Database.DatabaseBase.cs", template);
+
+        }
+
+
+        public static void BuildPredicateConditionExtTemplateClass(string projectRootDir, string solutionDir, string side)
+        {
+            List<ClassBuilder> builds =
+            BuildTemplate(solutionDir, projectRootDir, "PredicateConditionsExt",
+            "_API_NAME_PredicateConditionsExt", $"_NAMESPACE_BASE_{(side == "shared" ? "SHARED" : "SERVER")}_.Api._API_NAME_.Messages");
+
+            foreach (var item in builds)
+            {
+                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{item._Namespace}.{item._Name}.cs");
+                file.Directory.Create();
+                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{item._Namespace}.{item._Name}.cs", item.ToString());
+            }
 
         }
 
