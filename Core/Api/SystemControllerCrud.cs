@@ -93,6 +93,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
                 List<PropertiesItemModel> props = JsonSerializer.Deserialize<PropertiesModel>(json).Properties;
 
                 string template = FillTemplate(solutionDir, file, LoadTemplate(solutionDir, templateName));
+      
                 cBuilds.Add(new ClassBuilder(template)
                 {
                     _Name = FillTemplate(solutionDir, file, classNameCode),
@@ -125,15 +126,68 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
 
         public static void BuildControllerLogicTemplateClass(string projectRootDir, string solutionDir, string side)
         {
-            List<ClassBuilder> builds =
-            BuildTemplate(solutionDir, projectRootDir, "ApiControllerLogic",
-            "_API_NAME_Controller", "_NAMESPACE_BASE_SERVER_.Api._API_NAME_.Controllers");
+            string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
 
-            foreach (var item in builds)
+            string buildServerSettingFile = $"{solutionDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+
+
+            Dictionary<string, PropertiesModel> _ApiList = GetProps(solutionDir, projectRootDir);
+            foreach (var item in _ApiList)
             {
-                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{item._Namespace}.{item._Name}.cs");
+                string template = FillTemplate(LoadTemplate(solutionDir, "ApiControllerLogic"),
+                new Dictionary<string, string>() {
+                { "_NAMESPACE_BASE_SERVER_", serverSettings.Namespace },
+                { "_API_NAME_", item.Key },
+                { "_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace}
+                });
+
+
+                string createAssigning = $@"{String.Join("," + Environment.NewLine, item.Value.Properties.Where(p => p.Name != "Id" && !p.Private && p.ArgumentOf.Contains("Create")).ToList().Select(p => $"{p.Name} = request.{p.Name}"))}";
+                string updateAssigning = $@"{String.Join(Environment.NewLine, item.Value.Properties.Where(p => p.Name != "Id" && !p.Private && p.ArgumentOf.Contains("Update")).ToList().Select(p => $"updating.{p.Name} = request.{p.Name};"))}";
+
+                template = template
+                .Replace("//_MAPPING_FIELDS_CREATE_", createAssigning)
+                .Replace("//_MAPPING_FIELDS_UPDATE_", updateAssigning);
+
+                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Api.{item.Key}.Controllers.{item.Key}Controller.cs");
                 file.Directory.Create();
-                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{item._Namespace}.{item._Name}.cs", item.ToString());
+                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{serverSettings.Namespace}.Api.{item.Key}.Services.{item.Key}Controller.cs", template);
+            }
+
+        }
+
+
+        public static void BuildUpdateManyResponse(string projectRootDir, string solutionDir, string side)
+        {
+            string buildSharedSettingFile = $"{solutionDir}\\.netcms_config\\shared.json";
+            Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
+            SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
+
+            string buildServerSettingFile = $"{solutionDir}\\.netcms_config\\server.json";
+            Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
+            SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
+
+
+
+            Dictionary<string, PropertiesModel> _ApiList = GetProps(solutionDir, projectRootDir);
+            foreach (var item in _ApiList)
+            {
+                string template = FillTemplate(LoadTemplate(solutionDir, "ApiUpdateManyResponse"),
+                new Dictionary<string, string>() {
+                { "_NAMESPACE_BASE_SERVER_", serverSettings.Namespace },
+                { "_API_NAME_", item.Key },
+                { "_NAMESPACE_BASE_SHARED_", sharedSettings.Namespace}
+                });
+
+
+                FileInfo file = new FileInfo($"{solutionDir}\\.netcms_config\\generated\\{side}\\{sharedSettings.Namespace}.Api.{item.Key}.Messages.{item.Key}UpdateManyResponse.cs");
+                file.Directory.Create();
+                File.WriteAllText($"{solutionDir}\\.netcms_config\\generated\\{side}\\{sharedSettings.Namespace}.Api.{item.Key}.Messages.{item.Key}UpdateManyResponse.cs", template);
             }
 
         }
