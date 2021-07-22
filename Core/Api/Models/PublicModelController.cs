@@ -19,7 +19,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api.Models
             Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
             SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
             List<ClassBuilder> ListOfModel = new List<ClassBuilder>();
-            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{rootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
             // List All File located to "Configuration";
 

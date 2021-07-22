@@ -30,8 +30,20 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
                 }
                 Console.WriteLine("Building NetCMS Resources...");
                 ValidateProject(); // All Config File must be available or throw
-                Directory.Delete($"{CurrentProjectDir}\\.netcms_config\\generated", true);
+                if (Directory.Exists($"{CurrentProjectDir}\\.netcms_config\\generated"))
+                {
+                    Directory.Delete($"{CurrentProjectDir}\\.netcms_config\\generated", true);
+                }
+                
                 Console.WriteLine("Project is Valid.");
+
+                string modelDir = $"{CurrentProjectDir}\\server\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+                string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
+                if (files.Length <= 0)
+                {
+                    Console.WriteLine($"Cannot find any model in {modelDir}");
+                    return; // Cancel
+                }
 
                 // Load All Models
                 string serverJson = File.ReadAllText($"{CurrentProjectDir}\\.netcms_config\\server.json");

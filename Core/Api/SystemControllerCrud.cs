@@ -83,7 +83,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
             SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
 
-            string modelDir = $"{projectRootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{projectRootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
             List<ClassBuilder> cBuilds = new List<ClassBuilder>();
             foreach (var file in files)
@@ -275,7 +275,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             string buildServerSettingFile = $"{solutionDir}\\.netcms_config\\server.json";
             Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
             SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
-            string modelDir = $"{projectRootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{projectRootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
             Dictionary<string, PropertiesModel> _ApiList = new Dictionary<string, PropertiesModel>();
             foreach (var fileItem in files)
@@ -432,7 +432,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
             SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
 
-            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{rootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
 
             // List All File located to "Configuration";
@@ -471,7 +471,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
             SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
 
-            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{rootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
 
             // List All File located to "Configuration";
@@ -527,7 +527,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             Console.WriteLine($"Loading Shared Settings In {buildSharedSettingFile}");
             SettingModel sharedSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildSharedSettingFile));
             List<ClassBuilder> ListOfModel = new List<ClassBuilder>();
-            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{rootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
             // List All File located to "Configuration";
 

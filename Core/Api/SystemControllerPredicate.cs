@@ -30,7 +30,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Api
             Console.WriteLine($"Loading Server Settings In {buildServerSettingFile}");
             SettingModel serverSettings = JsonSerializer.Deserialize<SettingModel>(File.ReadAllText(buildServerSettingFile));
 
-            string modelDir = $"{rootDir}\\_Models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{rootDir}\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
             Console.WriteLine($"Scanning Public Models In {modelDir}");
 
             // List All File located to "Configuration";
