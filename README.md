@@ -11,11 +11,11 @@ Everyone is welcome to contribute thru PRs
 
 Open-Source .NET CMS Inspired of Hapi and Wordpress on many aspect and Strapi on Admin Side.
 
-Goal is to offer and easy way to create api tables, execute CRUD and set permission.
+Goal is to offer an easy way to create api tables, execute CRUD and set permission.
 
-Not only that but also allow deploy as cluster with central admin management so can be scaled lastly allow to sperate the admin dashboard from the api server.
+Not only that but also allow to deploy api as cluster with central admin management so can be scaled lastly allow to sperate the admin dashboard from the api server, so can be hosted elsewhere.
 
-Project still very early at idea stage we"ll build up from there using well master concepts.
+Project still very early at idea stage we"ll build up from there using well mastered concepts.
 
 ## Why?
 I never found exactly a good tool that is consistent especially when it come to data.
@@ -26,11 +26,27 @@ Because we want to leverage GRPC power but also allow classic JSON API wrapped a
 
 Lastly, while using strapi or wordpress it is great to have the administration built in but it can be a horrible thing when you have to handle multiple services... that why we aim to create the administration the same way strapi does with cutting edge Blazor tech-stack but can be easly hosted elsewhere like a seperated application but also can handle multiple related micro-service and integrate their data from a single dashboard.
 
+
 # Compiler Parts
 1. Create Project-> Pull starter project and create first required files.
 2. Create Plugin -> Pull Plugin Starter Project and Create First Files.
 3. Build -> Generate all C# common code based on model.json.
 4. Roslyn -> Automatically add all generated code to project thru Roslyn C# 9.0
+
+# NetCMS
+- CMS is open and dynamic and can be changed on the fly.
+- CMS uses JSON Model to Compile C# code.
+- Any Changes to JSON Model requires a server restart.
+- CMS Can make JSON Model via Admin Dashboard
+- CMS Can set relationships within the same Opened CMS
+- CMS Can set relationships from Opened CMS to Plugins and from Plugins to Plugins via Partial Public Model Class.
+- CMS Supports Relationships: 0-1, 1-1, 1-0, X-0, 0-X, X-X, 1-X and X-1.
+- CMS Uses EF Core (Code-First) and will bind relationship, X-0, 0-X, 1-0, 0-1 via a Binding Class.
+  
+# Plugins 
+- Plugins are Sealed (User/Admin cannot change the api model of plugins its sealed)
+- Each has a different DbContext to protect uniqueness and collisions between plugins.
+- Plugins come in 4 Parts: Admin, App, Shared and Server.
 
 # Ideas for Plugin Security
 To activate plugin during development:
@@ -44,7 +60,10 @@ Copyright protection (longterm):
 - Publisher can allow to sell plugins only to OpenCodeDev Hosted CMS (No DLL PLugin Access).
 - Publisher can use remote service to protect code and sell subscription.
 
+
 Admin can force to allow custom unsigned plugin to run but notice will be visible on administration side.
+
+KIC (Keep it Clean) Store Policy:
 
 3rd parties can:
 - Upload plugins to OCD NetCMS Pkgs Source
@@ -55,7 +74,7 @@ Plugins cannot be selling subscriptions outside our store (user experience).
 Plugins subscription can be in crypto or via credit card and you can setup webhook to get notify of any event regarding purchases with user informations.
 - Upload Administrative Templates and Front-End Template
   
-  One of the biggest advantage of NetCMS over other NodeJS or PHP CMS is the fact that user will front-end developpers will be able to develop design app and sell their template including the back-end which is quite great, rather than buy a template and having to shit yourself to make it work.
+  One of the biggest advantage of NetCMS over other NodeJS or PHP CMS is the fact that front-end developpers will be able to develop design app and sell their template including the back-end which is quite great, rather than buy a template and having to shit yourself to make it work.
 
 # Rough Goals
 1. Avoid Using Reflection at Runtime (During Request), as much as possible.
