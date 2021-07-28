@@ -39,7 +39,8 @@ Lastly, while using strapi or wordpress it is great to have the administration b
 - Any Changes to JSON Model requires a server restart.
 - CMS Can make JSON Model via Admin Dashboard
 - CMS Can set relationships within the same Opened CMS
-- CMS Can set relationships from Opened CMS to Plugins and from Plugins to Plugins via Partial Public Model Class.
+- CMS Can set relationships from Opened CMS to Plugins: 1-0 and X-0 Only.
+- CMS Can set Dominant Relationship (Delete Relation on Delete (1-0 Only)).
 - CMS Supports Relationships: 0-1, 1-1, 1-0, X-0, 0-X, X-X, 1-X and X-1.
 - CMS Uses EF Core (Code-First) and will bind relationship, X-0, 0-X, 1-0, 0-1 via a Binding Class.
   
