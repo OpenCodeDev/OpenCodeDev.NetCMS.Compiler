@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using OpenCodeDev.NetCMS.Compiler.Cli.Builder;
 using OpenCodeDev.NetCMS.Compiler.Cli.Builder.Messages;
+using OpenCodeDev.NetCMS.Compiler.Cli.Commands;
 using OpenCodeDev.NetCMS.Compiler.Core.Api;
 using OpenCodeDev.NetCMS.Compiler.Core.Api.Models;
 using System;
@@ -28,8 +29,13 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
             if (cmd.Equals("build"))
             {
                 Build(args);
-            }else if(cmd.Equals("list")){
+            }
+            else if (cmd.Equals("list"))
+            {
 
+            }else if(cmd.Equals("prebuild")){
+                var pb = new PreBuild();
+                pb.Run(args);
             }
         }
         public static void List(string[] args){
@@ -52,7 +58,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
 
             Console.WriteLine("Project is Valid.");
 
-            string modelDir = $"{CurrentProjectDir}\\server\\_netcms_\\models\\".Replace("\\\\", "\\"); // Remove Double Slashes
+            string modelDir = $"{CurrentProjectDir}\\server".Replace("\\\\", "\\"); // Remove Double Slashes
             string[] files = Directory.GetFiles($"{modelDir}", "*.model.json", SearchOption.AllDirectories);
             if (files.Length <= 0)
             {
