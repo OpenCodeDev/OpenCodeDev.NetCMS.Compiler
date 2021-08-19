@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
 {
-    public class PreBuild : ChiefCommander
+    public class CommandPreBuild : ChiefCommander
     {
         public void Run(string[] args)
         {

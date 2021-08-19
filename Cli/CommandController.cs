@@ -32,10 +32,13 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
             }
             else if (cmd.Equals("list"))
             {
-
+                var ls = new CommandList(CurrentProjectDir);
+                ls.Run(args);
             }else if(cmd.Equals("prebuild")){
-                var pb = new PreBuild();
+                var pb = new CommandPreBuild();
                 pb.Run(args);
+            }else{
+                Console.WriteLine("Command doesn't exist.");
             }
         }
         public static void List(string[] args){

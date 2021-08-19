@@ -2,7 +2,7 @@
 
 namespace OpenCodeDev.NetCMS.Compiler.Cli
 {
-    class Program
+    public  class Program
     {
         static void Main(string[] args)
         {
@@ -12,6 +12,11 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli
             }
             CommandController.Run(args[0], args);
             //Console.ReadLine();
+        }
+
+        public static  void PrintLogo(){ 
+        
+
         }
     }
 }
