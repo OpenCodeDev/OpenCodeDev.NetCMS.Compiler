@@ -1,6 +1,7 @@
 ﻿using OpenCodeDev.NetCMS.Compiler.Cli.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,22 +25,62 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
         }
 
         public void Run(string[] args){
+            PrintHeader();
             SkipNameCheck = HasArgKey(args, "-nocheck");
             Verbose = HasArgKey(args, "-verbose");
             Project = new ProjectModel();
-            Project.General = new ProjectModelGeneral();
+            Project.General = new ProjectModelGeneral() { GUID = Guid.NewGuid(), Version = "0.0.0", Revision = "1000", AllowTracking = true };
+
+            Project.Plugins = new List<ProjectModelPlugin>();
             SetProjectName();
+            SetDisplayName();
+            Project.Sides = new List<ProjectModelSide>() {
+            new ProjectModelSide() { Namespace = $"{Project.General.Name}.Server", Target = "Debug", RootCode = $"{CurrentDirectory}\\{Project.General.Name}\\Server" },
+            new ProjectModelSide() { Namespace = $"{Project.General.Name}.Shared", Target = "Debug", RootCode = $"{CurrentDirectory}\\{Project.General.Name}\\Shared" },
+            new ProjectModelSide() { Namespace = $"{Project.General.Name}.Admin", Target = "Debug", RootCode = $"{CurrentDirectory}\\{Project.General.Name}\\Admin" },
+
+            };
+            try
+            {
+                string projPath = $"{CurrentDirectory}\\{Project.General.Name}";
+                if (Directory.Exists(projPath))
+                {
+
+                    throw new Exception($"Directory {Project} already exist.");
+                }
+                Directory.CreateDirectory($"{CurrentDirectory}\\{Project.General.Name}");
+                Project.Save($"{projPath}\\init.json");
+            }
+            catch (Exception ex)
+            {
+                Print(ex.Message, ConsoleColor.Red);
+            }
+            Print($"Project {Project.General.DisplayName} created!", ConsoleColor.Green);
+            PrintFooter();
         }
-
-        public void LoadProject(){
-
+               
+        public void SetDisplayName(){
+            bool oK = false;
+            string input;
+            do
+            {
+                Print("Enter a display name for the project/plugin: ");
+                input = Console.ReadLine();
+                Project.General.DisplayName = input;
+                if (Project.General.ValidateDisplayName(Verbose))
+                { oK = true; }
+                else
+                {
+                    Console.WriteLine("Display Name is invalid.");
+                    Console.WriteLine("");
+                    Console.WriteLine("");
+                }
+            } while (!oK);
         }
 
         public void SetProjectName(){
-            //TODO: Check if name exist on official repos.
             bool namePassed = false;
-            string projName = "";
-            string pattern = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";            
+            string projName;          
             do
             {
                 Print("Enter a Namespace for your project/plugin (Eg: Company.NetCMS.PluginName)? ");

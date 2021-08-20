@@ -53,6 +53,11 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Models
         /// </summary>
         public bool AllowTracking { get; set; }
 
+        /// <summary>
+        /// Define if the assembly is plugin mode (wont load the plugin)
+        /// </summary>
+        public bool PluginMode { get; set; }
+
         private string WebPattern { get; set; } = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
 
         /// <summary>

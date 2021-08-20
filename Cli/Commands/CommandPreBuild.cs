@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenCodeDev.NetCMS.Compiler.Cli.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -32,7 +33,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
             ValidateFolder(output);
             ValidateFolder(rootCode);
 
-            APISettingsModel projectFile = new APISettingsModel() 
+            ProjectModelSide projectFile = new ProjectModelSide() 
             { Namespace = ns, Output = output, RootCode = rootCode, Target= target };
             string jString = JsonSerializer.Serialize(projectFile);
             ValidateFolder($"{projectFile.RootCode}..\\.netcms_config");

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenCodeDev.NetCMS.Compiler.Cli
+namespace OpenCodeDev.NetCMS.Compiler.Cli.Models
 {
-   public class APISettingsModel
+   public class ProjectModelSide
     {
         public string Namespace { get; set; } = null;
         public string RootCode { get; set; } = null;

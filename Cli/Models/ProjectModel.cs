@@ -12,6 +12,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Models
     {
         public ProjectModelGeneral General { get; set; }
         public List<ProjectModelPlugin> Plugins {get; set;}
+        public List<ProjectModelSide> Sides {get; set; }
 
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Models
         /// </summary>
         /// <returns></returns>
         public bool ValidTopLevel(){
-            return General != null;
+            return General != null && Sides != null && Sides.Count == 3;
         }
 
         public void Load(string location){
@@ -36,7 +37,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Models
 
         public void Save(string location)
         {
-            string json = JsonSerializer.Serialize(this);
+            string json = JsonSerializer.Serialize(this, typeof(ProjectModel), new JsonSerializerOptions() { WriteIndented = true } );
             File.WriteAllText(location, json);
         }
     }

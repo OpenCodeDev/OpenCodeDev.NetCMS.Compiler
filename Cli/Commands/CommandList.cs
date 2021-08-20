@@ -1,4 +1,5 @@
-﻿using OpenCodeDev.NetCMS.Compiler.Core.Builder.JsonModel;
+﻿using OpenCodeDev.NetCMS.Compiler.Cli.Models;
+using OpenCodeDev.NetCMS.Compiler.Core.Builder.JsonModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +13,9 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
     public class CommandList : ChiefCommander
     { 
         private string CurrentDirectory { get; set; }
-        private Dictionary<string, Dictionary<string, string[]>> AssembliesModels = new Dictionary<string, Dictionary<string, string[]>>();
+        public Dictionary<string, Dictionary<string, string[]>> AssembliesModels = new Dictionary<string, Dictionary<string, string[]>>();
         private bool Problem { get; set; }
-        private bool Verbose { get; set; }
+        public bool Verbose { get; set; }
         /// <summary>
         /// Run Silently, Without any output.
         /// </summary>
@@ -57,20 +58,22 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
         /// </summary>
         public void APIs()
         {
-            string[] files = Directory.GetFiles($"{CurrentDirectory}", "server.json", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles($"{CurrentDirectory}", "init.json", SearchOption.AllDirectories);
            
             foreach (var file in files)
             {
                 string json = File.ReadAllText(file);
                 try
                 {
-                    APISettingsModel server = JsonSerializer.Deserialize<APISettingsModel>(json);
-                    if (!server.Valid()) {
+                    ProjectModel project = JsonSerializer.Deserialize<ProjectModel>(json);
+                    
+                    if (!project.ValidTopLevel()) {
                         Print(Verbose, $"{file} (Ignored)", ConsoleColor.DarkYellow);
                         Problem = true;
                     }
                     else
                     {
+                        ProjectModelSide server = project.Sides.Where(p => p.Namespace.EndsWith("Server")).First();
                         if (AssembliesModels.ContainsKey(server.Namespace))
                         {
                             Print(Verbose, $"{file} (Duplicate of {server.Namespace}, Please Fix It)", ConsoleColor.Red);
