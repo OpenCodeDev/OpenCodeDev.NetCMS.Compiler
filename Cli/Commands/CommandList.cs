@@ -10,11 +10,16 @@ using System.Threading.Tasks;
 namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
 {
     public class CommandList : ChiefCommander
-    {
+    { 
         private string CurrentDirectory { get; set; }
-        private Dictionary<string, string[]> AssembliesModels = new Dictionary<string, string[]>();
+        private Dictionary<string, Dictionary<string, string[]>> AssembliesModels = new Dictionary<string, Dictionary<string, string[]>>();
         private bool Problem { get; set; }
         private bool Verbose { get; set; }
+        /// <summary>
+        /// Run Silently, Without any output.
+        /// </summary>
+        public bool Silent { get; set; } = false;
+
         public CommandList(string currentDir){
             CurrentDirectory = currentDir;
         }
@@ -26,13 +31,26 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
         {
             PrintHeader();
             Verbose = HasArgKey(args, "-verbose");
-            APIs();
-            Models();
+            Silent = HasArgKey(args, "-silent");
+            APIs(); // List APIS
+            ReadAssemblyLinks();
             if (Problem && !Verbose)
             {
                 Print("Problems were found during listing, run with -verbose for details.", ConsoleColor.Red);
             }
             PrintFooter();
+        }
+
+        /// <summary>
+        /// Extract Model and ModelExtension files.
+        /// </summary>
+        public void ReadAssemblyLinks(){
+            foreach (var assembly in AssembliesModels)
+            {
+                Print(!Silent, assembly.Key, ConsoleColor.Blue);
+                Models(assembly);
+                ModelExtensions(assembly);
+            }
         }
         /// <summary>
         /// Search for All server.json and *.model.json related to server info.
@@ -46,7 +64,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
                 string json = File.ReadAllText(file);
                 try
                 {
-                    ProjectSettingsModel server = JsonSerializer.Deserialize<ProjectSettingsModel>(json);
+                    APISettingsModel server = JsonSerializer.Deserialize<APISettingsModel>(json);
                     if (!server.Valid()) {
                         Print(Verbose, $"{file} (Ignored)", ConsoleColor.DarkYellow);
                         Problem = true;
@@ -60,12 +78,15 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
                         }
                         else{
                             string[] models = Directory.GetFiles($"{server.RootCode}", "*.model.json", SearchOption.AllDirectories);
-                            AssembliesModels.Add(server.Namespace, models);
+                            string[] modelExts = Directory.GetFiles($"{server.RootCode}", "*.model_extension.json", SearchOption.AllDirectories);
+                            Dictionary<string, string[]> elements = new Dictionary<string, string[]>() 
+                            { 
+                                {"Models", models }, {"ModelExtensions", modelExts }
+                            };
+                            AssembliesModels.Add(server.Namespace, elements);
                             Print(Verbose, $"{file} ({server.Namespace}, OK!)", ConsoleColor.DarkGreen);
 
                         }
-                        
-                        
                     }
                 }
                 catch (Exception ex)
@@ -82,38 +103,76 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
         /// <summary>
         /// Read All Json Model located in AssembliesModels Dictionary.
         /// </summary>
-        public void Models() {
-            foreach (var assembly in AssembliesModels)
-            {
-                Print(assembly.Key, ConsoleColor.Blue);
-                if (assembly.Value.Length > 0)
+        public void Models(KeyValuePair<string, Dictionary<string, string[]>> assembly) {
+
+                string[] files = assembly.Value.Where(p => p.Key == "Models").Select(p=>p.Value).FirstOrDefault();
+                if (files != null && files.Count() > 0)
                 {
-                    foreach (var modelFile in assembly.Value)
+                    foreach (var modelFile in files)
                     {
                         string json = File.ReadAllText(modelFile);
                         try
                         {
                             CollectionModel model = JsonSerializer.Deserialize<CollectionModel>(json);
-                            Print($"\t -> {model.Collection.Name}", ConsoleColor.DarkGreen);
+                            Print(!Silent,  $"\t -> {model.Collection.Name}", ConsoleColor.DarkGreen);
                         }
                         catch (Exception ex)
                         {
                             if (Verbose)
                             {
-                                Print($"\t -> {modelFile}", ConsoleColor.Red);
-                                Print($"{ex.Message}", ConsoleColor.Red);
+                                Print(!Silent, $"\t -> {modelFile}", ConsoleColor.Red);
+                                Print(!Silent, $"{ex.Message}", ConsoleColor.Red);
                             }
                             else{
-                                Print($"\t -> {modelFile}", ConsoleColor.Red);
+                                Print(!Silent, $"\t -> {modelFile}", ConsoleColor.Red);
                             }
                         }
                         
                     }
                 }else{
-                    Print($"\t -> No Api Models", ConsoleColor.DarkYellow);
+                    Print(!Silent, $"\t -> No Api Models", ConsoleColor.DarkYellow);
                 }
-            }
+            
         }
+
+        /// <summary>
+        /// Read all json Model Extensions (Relations).
+        /// </summary>
+        public void ModelExtensions(KeyValuePair<string, Dictionary<string, string[]>> assembly)
+        {                
+                string[] files = assembly.Value.Where(p => p.Key == "ModelExtensions").Select(p => p.Value).FirstOrDefault();
+                if (files != null && files.Count() > 0)
+                {
+                    foreach (var modelFile in files)
+                    {
+                        string json = File.ReadAllText(modelFile);
+                        try
+                        {
+                            CollectionModel model = JsonSerializer.Deserialize<CollectionModel>(json);
+                            Print(!Silent, $"\t -> {model.Collection.Name} (Extend Relationships)", ConsoleColor.DarkGreen);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (Verbose)
+                            {
+                                Print(!Silent, $"\t -> {modelFile}", ConsoleColor.Red);
+                                Print(!Silent, $"{ex.Message}", ConsoleColor.Red);
+                            }
+                            else
+                            {
+                                Print(!Silent, $"\t -> {modelFile}", ConsoleColor.Red);
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    Print(!Silent, $"\t -> This Assembly is not Extending Any APIs", ConsoleColor.DarkYellow);
+                }
+            
+        }
+
         public void Plugins(){
 
         }

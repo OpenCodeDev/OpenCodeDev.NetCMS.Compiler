@@ -13,7 +13,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
     {
         public void Run(string[] args)
         {
-            
+            PrintHeader();
             if (!HasArg(args, "-output")) { throw new Exception("The argument 'output' is missing."); }
             if (!HasArg(args, "-side")) { throw new Exception("The argument 'side' is missing."); }
             if (!HasArg(args, "-root")) { throw new Exception("The argument 'root' is missing."); }
@@ -32,7 +32,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
             ValidateFolder(output);
             ValidateFolder(rootCode);
 
-            ProjectSettingsModel projectFile = new ProjectSettingsModel() 
+            APISettingsModel projectFile = new APISettingsModel() 
             { Namespace = ns, Output = output, RootCode = rootCode, Target= target };
             string jString = JsonSerializer.Serialize(projectFile);
             ValidateFolder($"{projectFile.RootCode}..\\.netcms_config");
@@ -47,6 +47,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Cli.Commands
                 throw;
             }
             Console.WriteLine($"PreBuild was successfull {side}.json was created.");
+            PrintFooter();
         }
 
 

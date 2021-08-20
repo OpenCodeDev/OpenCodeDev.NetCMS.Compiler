@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenCodeDev.NetCMS.Compiler.Cli
 {
-   public class ProjectSettingsModel
+   public class APISettingsModel
     {
         public string Namespace { get; set; } = null;
         public string RootCode { get; set; } = null;

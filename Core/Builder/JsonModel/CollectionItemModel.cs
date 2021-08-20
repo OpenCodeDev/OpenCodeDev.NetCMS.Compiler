@@ -6,6 +6,7 @@ namespace OpenCodeDev.NetCMS.Compiler.Core.Builder.JsonModel
 {
     public class CollectionItemModel
     {
+        public string Namespace { get; set; }
         public string Name { get; set; }
         public bool HasOwner { get; set; }
         public bool Internal { get; set; }
