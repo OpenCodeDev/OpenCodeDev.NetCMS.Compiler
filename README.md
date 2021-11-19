@@ -1,5 +1,5 @@
 # OpenCodeDev.NetCMS.Compiler
-Official Compiler for NetCMS using Roslyn Source Code Generator.
+Official Compiler for NetCMS.
 
 ## Overview
 This project is a compiler for NetCMS, we wanted to test Source Code Generator from Microsoft.
